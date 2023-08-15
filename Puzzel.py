@@ -1,4 +1,3 @@
-#Auther Dewashish Pramanik
 import numpy as np
 from collections import deque
 import time
@@ -79,31 +78,38 @@ class Puzzle:
 
         start_time = time.time()
 
-        while frontier:
-            node = frontier.popleft()
-            self.num_explored += 1
+        try:
+            while frontier:
+                node = frontier.popleft()
+                self.num_explored += 1
 
-            if (node.state[0] == self.goal[0]).all():
-                actions = []
-                cells = []
-                while node.parent is not None:
-                    actions.append(node.action)
-                    cells.append(node.state)
-                    node = node.parent
-                actions.reverse()
-                cells.reverse()
-                self.solution_bfs = (actions, cells)
-                end_time = time.time()
-                self.search_time_bfs = end_time - start_time
-                return
+                if (node.state[0] == self.goal[0]).all():
+                    actions = []
+                    cells = []
+                    while node.parent is not None:
+                        actions.append(node.action)
+                        cells.append(node.state)
+                        node = node.parent
+                    actions.reverse()
+                    cells.reverse()
+                    self.solution_bfs = (actions, cells)
+                    end_time = time.time()
+                    self.search_time_bfs = end_time - start_time
+                    return
 
-            explored.add(tuple(node.state[0].flatten()))
+                explored.add(tuple(node.state[0].flatten()))
 
-            for action, state in self.neighbors(node.state):
-                state_tuple = tuple(state[0].flatten())
-                if state_tuple not in explored:
-                    child = Node(state=state, parent=node, action=action)
-                    frontier.append(child)
+                for action, state in self.neighbors(node.state):
+                    state_tuple = tuple(state[0].flatten())
+                    if state_tuple not in explored:
+                        child = Node(state=state, parent=node, action=action)
+                        frontier.append(child)
+
+            raise Exception("No BFS solution found.")
+        except Exception as e:
+            self.solution_bfs = None
+            self.search_time_bfs = None
+            print("BFS Error:", e)
 
     def solve_dfs(self):
         self.num_explored = 0
@@ -116,55 +122,70 @@ class Puzzle:
 
         start_time = time.time()
 
-        while frontier:
-            node = frontier.remove()
-            self.num_explored += 1
+        try:
+            while frontier:
+                node = frontier.remove()
+                self.num_explored += 1
 
-            if (node.state[0] == self.goal[0]).all():
-                actions = []
-                cells = []
-                while node.parent is not None:
-                    actions.append(node.action)
-                    cells.append(node.state)
-                    node = node.parent
-                actions.reverse()
-                cells.reverse()
-                self.solution_dfs = (actions, cells)
-                end_time = time.time()
-                self.search_time_dfs = end_time - start_time
-                return
+                if (node.state[0] == self.goal[0]).all():
+                    actions = []
+                    cells = []
+                    while node.parent is not None:
+                        actions.append(node.action)
+                        cells.append(node.state)
+                        node = node.parent
+                    actions.reverse()
+                    cells.reverse()
+                    self.solution_dfs = (actions, cells)
+                    end_time = time.time()
+                    self.search_time_dfs = end_time - start_time
+                    return
 
-            explored.add(tuple(node.state[0].flatten()))
+                explored.add(tuple(node.state[0].flatten()))
 
-            for action, state in self.neighbors(node.state):
-                state_tuple = tuple(state[0].flatten())
-                if state_tuple not in explored:
-                    child = Node(state=state, parent=node, action=action)
-                    frontier.add(child)
+                for action, state in self.neighbors(node.state):
+                    state_tuple = tuple(state[0].flatten())
+                    if state_tuple not in explored:
+                        child = Node(state=state, parent=node, action=action)
+                        frontier.add(child)
+
+            raise Exception("No DFS solution found.")
+        except Exception as e:
+            self.solution_dfs = None
+            self.search_time_dfs = None
+            print("DFS Error:", e)
 
 
-start = np.array([[1, 2, 3], [8, 0, 4], [7, 6, 5]])
-goal = np.array([[2, 8, 1], [0, 4, 3], [7, 6, 5]])
+if __name__ == "__main__":
+    start = np.array([[1, 2, 3], [8, 0, 4], [7, 6, 5]])
+    goal = np.array([[2, 8, 1], [0, 4, 3], [7, 6, 5]])
 
-startIndex = (1, 1)
-goalIndex = (1, 0)
+    startIndex = (1, 1)
+    goalIndex = (1, 0)
 
-puzzle = Puzzle(start, startIndex, goal, goalIndex)
+    puzzle = Puzzle(start, startIndex, goal, goalIndex)
 
-# Solve using BFS
-puzzle.solve_bfs()
-puzzle.print_solution(puzzle.solution_bfs, "BFS")
-print("BFS Search Time:", puzzle.search_time_bfs, "seconds")
+    try:
+        # Solve using BFS
+        puzzle.solve_bfs()
+        puzzle.print_solution(puzzle.solution_bfs, "BFS")
+        print("BFS Search Time:", puzzle.search_time_bfs, "seconds")
+    except Exception as e:
+        print("BFS Error:", e)
 
-# Solve using DFS
-puzzle.solve_dfs()
-puzzle.print_solution(puzzle.solution_dfs, "DFS")
-print("DFS Search Time:", puzzle.search_time_dfs, "seconds")
+    try:
+        # Solve using DFS
+        puzzle.solve_dfs()
+        puzzle.print_solution(puzzle.solution_dfs, "DFS")
+        print("DFS Search Time:", puzzle.search_time_dfs, "seconds")
+    except Exception as e:
+        print("DFS Error:", e)
 
-# Compare DFS and BFS
-print("\nComparison of DFS and BFS:")
-print("DFS Steps:", len(puzzle.solution_dfs[0]))
-print("DFS Search Time:", puzzle.search_time_dfs, "seconds")
-print("BFS Steps:", len(puzzle.solution_bfs[0]))
-print("BFS Search Time:", puzzle.search_time_bfs, "seconds")
-
+    # Compare DFS and BFS
+    print("\nComparison of DFS and BFS:")
+    if puzzle.solution_dfs:
+        print("DFS Steps:", len(puzzle.solution_dfs[0]))
+        print("DFS Search Time:", puzzle.search_time_dfs, "seconds")
+    if puzzle.solution_bfs:
+        print("BFS Steps:", len(puzzle.solution_bfs[0]))
+        print("BFS Search Time:", puzzle.search_time_bfs, "seconds")
