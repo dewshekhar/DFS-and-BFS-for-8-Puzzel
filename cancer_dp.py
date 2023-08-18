@@ -84,7 +84,7 @@ plt.title('Custom K-Medoids Clustering')
 plt.colorbar(label='Cluster')
 
 # Display author information
-plt.figtext(0.5, 0.01, 'Author: DEWASHISH PRAMANIK\nAdmission No: IITP001202', ha='center', fontsize=10)
+plt.figtext(0.5, 0.01, 'Student: DEWASHISH PRAMANIK\nAdmission No: IITP001202', ha='center', fontsize=10)
 
 plt.tight_layout()
 plt.show()
