@@ -29,7 +29,7 @@ data_scaled = scaler.fit_transform(data_imputed)
 num_clusters = 2
 
 # K-Means clustering
-kmeans = KMeans(n_clusters=num_clusters, random_state=0)
+kmeans = KMeans(n_clusters=num_clusters, n_init=10, random_state=0)  # Explicitly set n_init
 kmeans_labels = kmeans.fit_predict(data_scaled)
 
 # K-Medoids clustering
