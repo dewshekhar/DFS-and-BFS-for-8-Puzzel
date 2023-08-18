@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 from sklearn.cluster import KMeans
+from sklearn_extra.cluster import KMedoids
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 from sklearn.impute import SimpleImputer
@@ -31,23 +32,30 @@ num_clusters = 2
 kmeans = KMeans(n_clusters=num_clusters, n_init=10, random_state=0)  # Explicitly set n_init
 kmeans_labels = kmeans.fit_predict(data_scaled)
 
+# K-Medoids clustering
+kmedoids = KMedoids(n_clusters=num_clusters, random_state=0)
+kmedoids_labels = kmedoids.fit_predict(data_scaled)
+
 # Visualize the clusters and count the number of points in each cluster
-plt.figure(figsize=(8, 6))
+plt.figure(figsize=(12, 6))
 
 # Select "radius_mean" and "texture_mean" for plotting
 X_plot = data_imputed[['radius_mean', 'texture_mean']].values
 
-# Plot clusters
+# Plot K-Means clusters
+plt.subplot(1, 2, 1)
 plt.scatter(X_plot[:, 0], X_plot[:, 1], c=kmeans_labels, cmap='viridis', alpha=0.5)
-
-# Count the number of points in each cluster
-cluster_counts = np.bincount(kmeans_labels)
-for i, count in enumerate(cluster_counts):
-    plt.text(X_plot[i, 0], X_plot[i, 1], str(count), color='black', fontweight='bold')
-
 plt.xlabel('radius_mean')
 plt.ylabel('texture_mean')
-plt.title('K-Means Clustering with Cluster Counts')
+plt.title('K-Means Clustering')
+plt.colorbar(label='Cluster')
+
+# Plot K-Medoids clusters
+plt.subplot(1, 2, 2)
+plt.scatter(X_plot[:, 0], X_plot[:, 1], c=kmedoids_labels, cmap='viridis', alpha=0.5)
+plt.xlabel('radius_mean')
+plt.ylabel('texture_mean')
+plt.title('K-Medoids Clustering')
 plt.colorbar(label='Cluster')
 
 plt.tight_layout()
